@@ -4,11 +4,35 @@
  */
 package View;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.rmi.server.ExportException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 /**
  *
  * @author orlandocamacho
  */
 public class Home extends javax.swing.JFrame {
+
+    private Document document;
 
     /**
      * Creates new form Home
@@ -39,7 +63,7 @@ public class Home extends javax.swing.JFrame {
         jtCourses = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnEnviarCursos = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -107,7 +131,6 @@ public class Home extends javax.swing.JFrame {
         jspCoursesTable.setForeground(new java.awt.Color(51, 51, 51));
         jspCoursesTable.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
-        jtCourses.setBackground(new java.awt.Color(255, 255, 255));
         jtCourses.setForeground(new java.awt.Color(51, 51, 51));
         jtCourses.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -164,11 +187,16 @@ public class Home extends javax.swing.JFrame {
         jButton2.setText("Seleccionar todos");
         jpCourses.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 303, 130, 30));
 
-        jButton3.setBackground(new java.awt.Color(13, 85, 136));
-        jButton3.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Enviar cursos");
-        jpCourses.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 303, 130, 30));
+        btnEnviarCursos.setBackground(new java.awt.Color(13, 85, 136));
+        btnEnviarCursos.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+        btnEnviarCursos.setForeground(new java.awt.Color(255, 255, 255));
+        btnEnviarCursos.setText("Enviar cursos");
+        btnEnviarCursos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEnviarCursosActionPerformed(evt);
+            }
+        });
+        jpCourses.add(btnEnviarCursos, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 303, 130, 30));
 
         getContentPane().add(jpCourses, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, 450, 350));
 
@@ -214,7 +242,6 @@ public class Home extends javax.swing.JFrame {
 
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jtCourses1.setBackground(new java.awt.Color(255, 255, 255));
         jtCourses1.setForeground(new java.awt.Color(51, 51, 51));
         jtCourses1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -260,6 +287,65 @@ public class Home extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnEnviarCursosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarCursosActionPerformed
+        try {
+            GenerarDOM();
+            generarDocumento();
+            generarXml();
+        } catch (ExportException ex) {
+            ex.getMessage();
+        } catch (ParserConfigurationException ex) {
+            ex.getMessage();
+        } catch (IOException ex) {
+            ex.getMessage();
+        } catch (TransformerException ex) {
+            ex.getMessage();
+        }
+
+    }//GEN-LAST:event_btnEnviarCursosActionPerformed
+
+    public void GenerarDOM() throws ParserConfigurationException {
+        DocumentBuilderFactory fabrica = DocumentBuilderFactory.newDefaultInstance();
+        DocumentBuilder constructor = fabrica.newDocumentBuilder();
+        document = constructor.newDocument();
+    }
+
+    public void generarDocumento() {
+        int columnas = jtCourses1.getColumnCount();
+        int filas = jtCourses1.getRowCount();
+
+        Element element = document.createElement("courses");
+        document.appendChild(element);
+        Element course = document.createElement("course");
+        element.appendChild(course);
+
+        for (int i = 0; i < columnas; i++) {
+
+            Element nombre = document.createElement("Materia");
+            nombre.appendChild(document.createTextNode((String) jtCourses1.getValueAt(i, 1)));
+            element.appendChild(nombre);
+
+            Element semestre = document.createElement("Semester");
+            semestre.appendChild(document.createTextNode((String) jtCourses1.getValueAt(i, 2)));
+            element.appendChild(semestre);
+        }
+
+    }
+
+    public void generarXml() throws TransformerConfigurationException, IOException, TransformerException {
+        TransformerFactory factoria = TransformerFactory.newInstance();
+        Transformer transformer = factoria.newTransformer();
+
+        Source source = new DOMSource(document);
+        File file = new File("courses.xml");
+
+        FileWriter fw = new FileWriter(file);
+        PrintWriter pw = new PrintWriter(fw);
+        Result result = new StreamResult(pw);
+
+        transformer.transform(source, result);
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -296,9 +382,9 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEnviarCursos;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
