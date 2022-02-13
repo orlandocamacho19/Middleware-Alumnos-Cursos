@@ -4,6 +4,7 @@
  */
 package View;
 
+import BussinessObject.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,10 +29,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-/**
- *
- * @author orlandocamacho
- */
 public class Home extends javax.swing.JFrame {
 
     private Document document;
@@ -39,8 +38,17 @@ public class Home extends javax.swing.JFrame {
      */
     public Home() {
         initComponents();
+        Courses courses = Courses.getInstance();
+        jLabel6.setText("6"); //Quitar esta linea cuando funcionen los sockets, el 6 es solo para pruebas.
+        int semestreInt = Integer.parseInt(jLabel6.getText());       
+        ArrayList<Course> cursos = courses.getSemesterCourses(semestreInt);
+        llenarTabla(cursos);
+        File file = new File("courses.xml");
+        file.delete();
+        
     }
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -61,8 +69,6 @@ public class Home extends javax.swing.JFrame {
         jpCourses = new javax.swing.JPanel();
         jspCoursesTable = new javax.swing.JScrollPane();
         jtCourses = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         btnEnviarCursos = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -134,20 +140,17 @@ public class Home extends javax.swing.JFrame {
         jtCourses.setForeground(new java.awt.Color(51, 51, 51));
         jtCourses.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "ID", "Materia", "Semestre", ""
+                "ID", "Materia", "Semestre"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Boolean.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -165,27 +168,12 @@ public class Home extends javax.swing.JFrame {
         jspCoursesTable.setViewportView(jtCourses);
         jtCourses.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (jtCourses.getColumnModel().getColumnCount() > 0) {
-            jtCourses.getColumnModel().getColumn(0).setHeaderValue("ID");
             jtCourses.getColumnModel().getColumn(1).setResizable(false);
             jtCourses.getColumnModel().getColumn(1).setPreferredWidth(180);
             jtCourses.getColumnModel().getColumn(2).setResizable(false);
-            jtCourses.getColumnModel().getColumn(3).setResizable(false);
-            jtCourses.getColumnModel().getColumn(3).setHeaderValue("");
         }
 
         jpCourses.add(jspCoursesTable, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 410, 270));
-
-        jButton1.setBackground(new java.awt.Color(13, 85, 136));
-        jButton1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Deseleccionar todos");
-        jpCourses.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 303, 130, 30));
-
-        jButton2.setBackground(new java.awt.Color(13, 85, 136));
-        jButton2.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Seleccionar todos");
-        jpCourses.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 303, 130, 30));
 
         btnEnviarCursos.setBackground(new java.awt.Color(13, 85, 136));
         btnEnviarCursos.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
@@ -245,10 +233,7 @@ public class Home extends javax.swing.JFrame {
         jtCourses1.setForeground(new java.awt.Color(51, 51, 51));
         jtCourses1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
                 "Semestre", "Materia"
@@ -269,6 +254,7 @@ public class Home extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jtCourses1.setColumnSelectionAllowed(true);
         jtCourses1.setGridColor(new java.awt.Color(153, 153, 153));
         jtCourses1.setRowHeight(25);
         jtCourses1.setShowGrid(true);
@@ -287,64 +273,36 @@ public class Home extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void llenarTabla(ArrayList<Course> courses) {
+        DefaultTableModel modelo = (DefaultTableModel) jtCourses.getModel();
+
+        for (int i = 0; i < courses.size(); i++) {
+            modelo.addRow(new Object[]{courses.get(i).getId(), courses.get(i).getName(), String.valueOf(courses.get(i).getSemester())});
+        }
+
+    }
+
     private void btnEnviarCursosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarCursosActionPerformed
+       
+        Courses courses = Courses.getInstance();
+       ArrayList<Course> cursos = courses.getSemesterCourses(Integer.parseInt(jLabel6.getText()));
+        documentXML xml = new documentXML();
+
         try {
-            GenerarDOM();
-            generarDocumento();
-            generarXml();
-        } catch (ExportException ex) {
-            ex.getMessage();
+            xml.GenerarDOM();
         } catch (ParserConfigurationException ex) {
-            ex.getMessage();
+            ex.getStackTrace();
+        }
+
+        xml.generarDocumento(cursos);
+        try {
+            xml.generarXml();
         } catch (IOException ex) {
-            ex.getMessage();
+            ex.getStackTrace();
         } catch (TransformerException ex) {
-            ex.getMessage();
+            ex.getStackTrace();
         }
-
     }//GEN-LAST:event_btnEnviarCursosActionPerformed
-
-    public void GenerarDOM() throws ParserConfigurationException {
-        DocumentBuilderFactory fabrica = DocumentBuilderFactory.newDefaultInstance();
-        DocumentBuilder constructor = fabrica.newDocumentBuilder();
-        document = constructor.newDocument();
-    }
-
-    public void generarDocumento() {
-        int columnas = jtCourses1.getColumnCount();
-        int filas = jtCourses1.getRowCount();
-
-        Element element = document.createElement("courses");
-        document.appendChild(element);
-        Element course = document.createElement("course");
-        element.appendChild(course);
-
-        for (int i = 0; i < columnas; i++) {
-
-            Element nombre = document.createElement("Materia");
-            nombre.appendChild(document.createTextNode((String) jtCourses1.getValueAt(i, 1)));
-            element.appendChild(nombre);
-
-            Element semestre = document.createElement("Semester");
-            semestre.appendChild(document.createTextNode((String) jtCourses1.getValueAt(i, 2)));
-            element.appendChild(semestre);
-        }
-
-    }
-
-    public void generarXml() throws TransformerConfigurationException, IOException, TransformerException {
-        TransformerFactory factoria = TransformerFactory.newInstance();
-        Transformer transformer = factoria.newTransformer();
-
-        Source source = new DOMSource(document);
-        File file = new File("courses.xml");
-
-        FileWriter fw = new FileWriter(file);
-        PrintWriter pw = new PrintWriter(fw);
-        Result result = new StreamResult(pw);
-
-        transformer.transform(source, result);
-    }
 
     /**
      * @param args the command line arguments
@@ -383,8 +341,6 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEnviarCursos;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

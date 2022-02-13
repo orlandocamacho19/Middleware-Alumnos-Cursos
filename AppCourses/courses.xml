@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><courses>
+    <course/>
+    <ID>041</ID>
+    <Materia>Innovacion tecnologica</Materia>
+    <Semester>6</Semester>
+    <Hours>3</Hours>
+    <Points>5.62</Points>
+    <ID>042</ID>
+    <Materia>Sistemas distribuidos</Materia>
+    <Semester>6</Semester>
+    <Hours>3</Hours>
+    <Points>5.62</Points>
+    <ID>043</ID>
+    <Materia>Aplicaciones moviles</Materia>
+    <Semester>6</Semester>
+    <Hours>3</Hours>
+    <Points>5.62</Points>
+    <ID>044</ID>
+    <Materia>Sistemas empotrados</Materia>
+    <Semester>6</Semester>
+    <Hours>3</Hours>
+    <Points>5.62</Points>
+    <ID>045</ID>
+    <Materia>Proyecto de software integrador</Materia>
+    <Semester>6</Semester>
+    <Hours>3</Hours>
+    <Points>5.62</Points>
+    <ID>046</ID>
+    <Materia>Diseno de sistemas interactivos</Materia>
+    <Semester>6</Semester>
+    <Hours>3</Hours>
+    <Points>5.62</Points>
+    <ID>047</ID>
+    <Materia>Arquitecturas empresariales</Materia>
+    <Semester>6</Semester>
+    <Hours>3</Hours>
+    <Points>5.62</Points>
+    <ID>048</ID>
+    <Materia>Ingles universitario B1 III</Materia>
+    <Semester>6</Semester>
+    <Hours>5</Hours>
+    <Points>9.37</Points>
+</courses>
